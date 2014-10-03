@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -xe
 
 cd src
 nasm boot.asm -f bin -o ../build/boot.bin
