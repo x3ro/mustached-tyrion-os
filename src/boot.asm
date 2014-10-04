@@ -37,6 +37,9 @@ mov bx, HELLO_MSG
 call print_string
 
 
+mov dx, 0x1fb6 ; store the value to print in dx
+call print_hex ; call the function
+
 
     jmp $  ; Loop forever
 
