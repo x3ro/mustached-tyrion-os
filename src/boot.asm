@@ -1,5 +1,16 @@
 [org 0x7c00]
 
+
+%macro func 1
+    %1:
+    pusha
+%endmacro
+
+%macro end 0
+    popa
+    ret
+%endmacro
+
     ; mov ah, 0x0e ; int 10/ah = 0eh -> scrolling teletype BIOS routine
 
 
