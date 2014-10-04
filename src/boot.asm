@@ -47,7 +47,7 @@ call print_hex ; call the function
 
 ; Data
 HELLO_MSG:
-    db 'Booting...', 0
+    db 'It is booting...', 0
 
     ; Padding and magic BIOS number.
 times 510-($-$$) db 0       ; Pad the boot sector out with zeros
