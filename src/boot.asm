@@ -11,8 +11,9 @@
     ret
 %endmacro
 
+    mov [BOOT_DRIVE], dl    ; Save our boot drive so that we can read from it later
 
-    mov bp, 0x8000      ; Set up the stack safely away at 0x8000
+    mov bp, 0x8000          ; Set up the stack safely away at 0x8000
     mov sp, bp
 
     mov bx, HELLO_MSG
@@ -27,6 +28,7 @@
 
 
 %include "print_functions.asm"
+%include "disk_io.asm"
 
 ; Global variables
 BOOT_DRIVE: db 0
