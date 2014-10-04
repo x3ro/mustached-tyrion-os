@@ -11,45 +11,37 @@
     ret
 %endmacro
 
-    ; mov ah, 0x0e ; int 10/ah = 0eh -> scrolling teletype BIOS routine
 
+    mov bp, 0x8000      ; Set up the stack safely away at 0x8000
+    mov sp, bp
 
-    ; mov al, 'H'
-    ; int 0x10
-    ; mov al, 'e'
-    ; int 0x10
-    ; mov al, 'l'
-    ; int 0x10
-    ; ;
-    ; mov al, 'l'
-    ; int 0x10
-    ; mov al, 'o'
-    ; int 0x10
+    mov bx, HELLO_MSG
+    call print_string
 
-    ; xchg bx, bx
-    ; mov al, the_secret
-    ; mov al, [the_secret]
-    ; mov al, [the_secret]
-    ; int 0x10
-;and ax, ax
-mov bx, HELLO_MSG
-;xchg bx, bx
-call print_string
-
-
-mov dx, 0x1fb6 ; store the value to print in dx
-call print_hex ; call the function
+    mov dx, 0x1fb6 ; store the value to print in dx
+    call print_hex ; call the function
 
 
     jmp $  ; Loop forever
 
+
+
 %include "print_functions.asm"
+
+; Global variables
+BOOT_DRIVE: db 0
 
 ; Data
 HELLO_MSG:
     db 'It is booting...', 0
 
-    ; Padding and magic BIOS number.
+
+; Padding and magic BIOS number.
 times 510-($-$$) db 0       ; Pad the boot sector out with zeros
 dw 0xaa55                   ; Last two bytes form the magic number,
-                                ; so BIOS knows we are a boot sector.
+                            ; so BIOS knows we are a boot sector.
+
+; BIOS will only load the first 512 bytes, so after the bootsector we can
+; write some recognizable memory pattern to try loading data from disk
+times 256 dw 0xdada
+times 256 dw 0xface
