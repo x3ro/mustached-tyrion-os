@@ -23,6 +23,18 @@
     call print_hex ; call the function
 
 
+    mov bx, 0x9000 ; Load 5 sectors starting at 0x0000(ES):0x9000(BX) from the boot disk
+    mov dh, 5
+    mov dl, [BOOT_DRIVE]
+    call floppy_load
+
+    mov dx, [0x9000] ; Print out the first loaded word, should be 0xdada
+    call print_hex
+
+    mov dx, [0x9000 + 512]  ; This should be 0xface
+    call print_hex
+
+
     jmp $  ; Loop forever
 
 
