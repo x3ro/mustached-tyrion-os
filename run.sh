@@ -1,4 +1,7 @@
 #!/bin/bash -xe
 
 ./build.sh
-bochs -q
+bochs -q <<EOF
+c
+
+EOF
