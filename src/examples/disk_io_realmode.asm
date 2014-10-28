@@ -1,3 +1,21 @@
+; Relies on the fact that BOOT_DRIVE is set to, well, the boot drive index
+; e.g. through
+mov [BOOT_DRIVE], dl    ; Save our boot drive so that we can read from it later
+; directly at the beginning of the bootloader
+
+
+mov bx, 0x9000 ; Load 5 sectors starting at 0x0000(ES):0x9000(BX) from the boot disk
+mov dh, 5
+mov dl, [BOOT_DRIVE]
+call floppy_load
+
+mov dx, [0x9000] ; Print out the first loaded word, should be 0xdada
+call print_hex
+
+mov dx, [0x9000 + 512]  ; This should be 0xface
+call print_hex
+
+
 ; ---------------------------------
 ; es:bx - target memory to load to
 ; dh - number of sectors to load

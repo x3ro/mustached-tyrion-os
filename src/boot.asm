@@ -11,44 +11,36 @@
     ret
 %endmacro
 
-    mov [BOOT_DRIVE], dl    ; Save our boot drive so that we can read from it later
-
     mov bp, 0x8000          ; Set up the stack safely away at 0x8000
     mov sp, bp
 
-    mov bx, HELLO_MSG
+    mov bx, MSG_REAL_MODE
     call print_string
 
-    mov dx, 0x1fb6 ; store the value to print in dx
-    call print_hex ; call the function
 
+    ; Switch to 32-bit protected mode
+    cli                     ; Disable interrupts until we have made the switch
+    lgdt [gdt_descriptor]   ; Load the GDT
+    mov eax, cr0            ; We need to set the lowest bit in cr0
+    or eax, 0x1             ; to switch modes, and we cannot do it
+    mov cr0, eax            ; directly in cr0
 
-    mov bx, 0x9000 ; Load 5 sectors starting at 0x0000(ES):0x9000(BX) from the boot disk
-    mov dh, 5
-    mov dl, [BOOT_DRIVE]
-    call floppy_load
-
-    mov dx, [0x9000] ; Print out the first loaded word, should be 0xdada
-    call print_hex
-
-    mov dx, [0x9000 + 512]  ; This should be 0xface
-    call print_hex
-
-
-    jmp $  ; Loop forever
+    ; Make a far-jump so that the CPU pipeline, which might still contain
+    ; 16-bit instruction now unusable in 32-bit mode, gets flushed.
+    jmp CODE_SEG:start_protected_mode
 
 
 
 %include "print_functions.asm"
-%include "disk_io.asm"
+%include "gdt.asm"
+%include "protected_mode.asm"
+%include "print_string_pm.asm"
+
+
 
 ; Global variables
-BOOT_DRIVE: db 0
-
-; Data
-HELLO_MSG:
-    db 'It is booting...', 0
-
+MSG_REAL_MODE db "Booted 16-bit Real Mode", 0
+MSG_PROT_MODE db "Switched to 32-bit Protected Mode", 0
 
 ; Padding and magic BIOS number.
 times 510-($-$$) db 0       ; Pad the boot sector out with zeros
